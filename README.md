@@ -2,7 +2,9 @@
 Sviluppato con framework REACT + Bootstrap 
 
 ## Per eseguire in locale in modalità DEV: 
-> npm start
+```shell script
+npm start
+```
 
 ### Todo List
 - [ ] Miglioramento pagina/processo signup
