@@ -1,6 +1,11 @@
 # Frontend dell'applicazione web iDocs
 Sviluppato con framework REACT + Bootstrap 
 
+![Clienti](/doc/clienti.jpg)
+![Progetti](/doc/progetti.jpg)
+![Documenti](/doc/documenti.jpg)
+
+
 ## Per eseguire in locale in modalità DEV: 
 ```shell script
 npm start
