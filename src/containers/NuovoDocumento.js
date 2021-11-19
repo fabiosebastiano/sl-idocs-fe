@@ -10,38 +10,21 @@ export default function NewNote() {
   const history = useHistory();
   const [descrizione, setDescrizione] = useState("");
   const [isAnnulla, setAnnulla] = useState(false);
-
+  const [showConfirmaButton, setShowConfirmaButton] = useState(false);
   const [isLoading] = useState(false);
   const { state } = useLocation();
 
-  function validateForm() {
-    return true;
-    //TODO: verificare comportamento pulsante!
-
-    /*
-    if(file.current != null){
-      console.log("---validateForm: " + file.current.name);
-      return true;
-    }else{
-      console.log("---validateForm: VUOTO");
-      return false;
-    }
-    */
-    //return file.current != null;
-  }
 
   function handleFileChange(event) {
     file.current = event.target.files[0];
-    validateForm();
+    setShowConfirmaButton(true);
   }
 
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    console.log("#### " + isAnnulla);
     const idProgetto = state[0].projectId;
-    const idCliente = state[0].clientId;
       
     if (isAnnulla){
       history.push({
@@ -118,7 +101,7 @@ export default function NewNote() {
           size="lg"
           variant="secondary"
           isLoading={isLoading}
-          disabled={!validateForm()}
+         
           onClick={() => setAnnulla(true)}
         >
           Annulla
@@ -129,7 +112,7 @@ export default function NewNote() {
           size="lg"
           variant="primary"
           isLoading={isLoading}
-          disabled={!validateForm()}
+          disabled={!showConfirmaButton}
         >
           Carica
         </LoaderButton>
