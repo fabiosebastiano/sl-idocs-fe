@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { onError } from "../lib/errorLib";
-import { BsPlusSquare } from "react-icons/bs";
-import { LinkContainer } from "react-router-bootstrap";
+import {  AiOutlineEdit } from "react-icons/ai";
+
 import { HiOutlineDocumentDuplicate} from "react-icons/hi";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../lib/contextLib";
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Button, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -18,6 +17,8 @@ import Select from 'react-select'
 export default function ClienteNew() {
 
   const { id, userId } = useParams();
+  const { isAuthenticated } = useAppContext();
+
   const history = useHistory();
   const [ragioneSociale, setRagioneSociale] = useState("");
   const [listaProgetti, setProgetti] = useState([]);
@@ -35,6 +36,10 @@ export default function ClienteNew() {
     <Tooltip {...props}>Elimina progetto</Tooltip>
   );
 
+  const renderEditTooltip = props => (
+    <Tooltip {...props}>Modifica progetto</Tooltip>
+  );
+
   var { idCliente } = useAppContext();
 
   const columns = [
@@ -44,6 +49,10 @@ export default function ClienteNew() {
       id: 'edit', label: '', align: 'left', disableClickEventBubbling: true
     }
   ];
+
+  function editProgetto(id, nome){
+
+  };
 
   useEffect(() => {
 
@@ -66,7 +75,6 @@ export default function ClienteNew() {
 
               setRagioneSociale(data.ragioneSociale);
 
-
             })
           }
         })
@@ -80,6 +88,7 @@ export default function ClienteNew() {
 
 
     async function onLoad() {
+      console.log("-----isAuthenticated " + isAuthenticated);
       try {
         loadCliente();
         loadProgetti();
@@ -228,8 +237,13 @@ export default function ClienteNew() {
                     <TableCell align="center">{progetto.descrizione}</TableCell>
 
                     <TableCell align="left">
+                      
                       <OverlayTrigger placement="top" overlay={renderDocsTooltip}>
                         <Button style={{ marginRight: "5px" }}>  <HiOutlineDocumentDuplicate onClick={(e) => aggiornaProgetto(progetto.id)} /> </Button>
+                      </OverlayTrigger>
+                     
+                      <OverlayTrigger placement="top" overlay={renderEditTooltip}>
+                        <Button style={{marginRight: "5px"}}>  <AiOutlineEdit onClick={(e) => editProgetto(progetto.id, progetto.nome)} /> </Button>
                       </OverlayTrigger>
 
                       <OverlayTrigger placement="top" overlay={renderEliminaTooltip}>

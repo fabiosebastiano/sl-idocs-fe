@@ -1,21 +1,23 @@
 import React, {  useState, useEffect} from "react";
-import { useParams , useLocation} from "react-router-dom";
+import { useParams , useLocation, useHistory} from "react-router-dom";
 import { onError } from "../lib/errorLib";
 import {  BsPlusSquare} from "react-icons/bs";
 import { LinkContainer } from "react-router-bootstrap";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { AiFillLike, AiFillDislike } from "react-icons/ai";
+import { AiOutlineEdit ,AiFillLike, AiFillDislike } from "react-icons/ai";
 import ListGroup from "react-bootstrap/ListGroup";
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Button, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { useAppContext } from "../lib/contextLib";
+
 
 import Moment from 'moment';
 
 export default function ClienteNew() {
-
+  const history = useHistory();
   const { id, idCliente } = useParams();
   const [nomeProgetto, setNomeProgetto]             = useState("");
   const [documentoCliccato, setDocumentoCliccato]   = useState(null);
@@ -24,15 +26,19 @@ export default function ClienteNew() {
   const [showApprova, setShowApprova]               = useState(false);
   const { state }  = useLocation();
   const [listaDocumenti, setDocumenti]        = useState([]);
+  const { isAuthenticated, userHasAuthenticated, userId,  userGetLoggedIn } = useAppContext();
+  
 
   const renderApprovaTooltip = props => (
-    <Tooltip {...props}>Approva o Rifiuta il documento</Tooltip>
+    <Tooltip {...props}>Approva o rifiuta il documento</Tooltip>
   );
 
   const renderEliminaTooltip = props => (
-    <Tooltip {...props}>Elimina progetto</Tooltip>
+    <Tooltip {...props}>Elimina documento</Tooltip>
   );
-
+  const renderEditTooltip = props => (
+    <Tooltip {...props}>Modifica documento</Tooltip>
+  );
   const columns = [
     { id: 'name', label: 'NOME',  align: 'left',  sortable: true, disableClickEventBubbling: true },
     { id: 'estensione', label: 'ESTENSIONE',  align: 'center',  type: 'number'  , disableClickEventBubbling: true},
@@ -48,7 +54,9 @@ export default function ClienteNew() {
     }}
   ];
 
+  function editDocumento(id, nome){
 
+  };
 
   function renderApprovato(dataCambioStato) {
 
@@ -213,7 +221,18 @@ export default function ClienteNew() {
     setShowDelete(false);
   }
 
+  function caricaDocumento(){
+    history.push({
+      pathname: `/documents/new`,
+      state: [{
+        projectId: id,
+        nomeProgetto: nomeProgetto, 
+        clientId: state[0].clientId 
+      }]
+    });
 
+
+  }
 
   function renderDocumentsList(documenti) {
     Moment.locale('it');
@@ -245,6 +264,9 @@ export default function ClienteNew() {
                     }</TableCell>
                   <TableCell align="center" className="font-weight-bold">{documento.stato}</TableCell>
                   <TableCell align="left">
+                  <OverlayTrigger placement="top" overlay={renderEditTooltip}>
+                        <Button style={{marginRight: "5px"}}>  <AiOutlineEdit onClick={(e) => editDocumento(documento.id, documento.nome, documento.estensione)} /> </Button>
+                      </OverlayTrigger>
                   <OverlayTrigger placement="top" overlay={renderEliminaTooltip}>
                     <Button style={{marginRight: "5px"}}>
                       <RiDeleteBin6Line size={17}  onClick={(e)=> eliminaDocumento(documento.id, documento.nome, documento.estensione)}/>
@@ -287,12 +309,7 @@ export default function ClienteNew() {
           </TableBody>
         </Table>
       </TableContainer>
-      <LinkContainer  to="/documents/new" to={{pathname: "/documents/new", state: [{projectId: id, nomeProgetto: nomeProgetto, clientId: state[0].clientId }] }}>
-          <ListGroup.Item action className="py-3 text-nowrap text-truncate">
-            <BsPlusSquare size={17} />
-            <span className="ml-2 font-weight-bold">Carica un nuovo documento</span>
-          </ListGroup.Item>
-          </LinkContainer>
+     
       </>
     );
   }
@@ -302,6 +319,8 @@ export default function ClienteNew() {
       <div className="documenti">
         <h2 className="ml-2 pb-3 mt-4 mb-3 border-bottom">Documenti del progetto: {nomeProgetto}</h2>
         <ListGroup>{renderDocumentsList(listaDocumenti)}</ListGroup>
+        <br />
+        <Button variant="outline-primary" onClick={caricaDocumento}>+ Carica documento</Button>{'    '}
       </div>
     );
   }
@@ -317,6 +336,12 @@ export default function ClienteNew() {
           underline="hover"
           color="inherit"
           href={"/customers/"+state[0].clientId}
+          onClick={() => {
+            userGetLoggedIn(userId);
+            userHasAuthenticated(true);
+            console.log("!!! ON CLICK BREADCRUMB!!!")
+          }
+          }
         >
           Progetti
         </Link>

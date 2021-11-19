@@ -4,14 +4,17 @@ import LoaderButton from "../components/LoaderButton";
 import "./Login.css";
 import { useAppContext } from "../lib/contextLib";
 import { useHistory } from "react-router-dom";
+import { onError } from "../lib/errorLib";
+import { Button, Modal} from "react-bootstrap";
 
 export default function Login() {
+    const history = useHistory();
     const [username, setUsernamel] = useState("");
     const [password, setPassword] = useState("");
-    const { userHasAuthenticated, userGetLoggedIn, setNomeUtente, setCognomeUtente } = useAppContext();
-    //const [useriId, setUserId] = useState();
+    const [showError, setShowError]                 = useState(false);
 
-    const history = useHistory();
+    const { userHasAuthenticated, userGetLoggedIn, setNomeUtente, setCognomeUtente } = useAppContext();
+    
 
     function validateForm() {
         return username.length > 0 && password.length > 0;
@@ -61,8 +64,8 @@ export default function Login() {
 
                    // history.push("/home");
                 } else {
-                    console.log('KO', response);
-                    alert(response.statusText);
+                    //console.log('KO', response);
+                    setShowError(true);
                 }
             })
             /*  .then(result => {
@@ -113,6 +116,21 @@ export default function Login() {
                     Login
                 </LoaderButton>
             </Form>
+            <Modal show={showError} onHide={() => setShowError(false)} animation={false}>
+                <Modal.Header closeButton>
+                    <Modal.Title> Attenzione</Modal.Title>
+                </Modal.Header>
+                <Modal.Body >
+                    <div align="center">
+                    Username o password errata.
+                </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowError(false)}>
+                    Chiudi
+                    </Button>
+                </Modal.Footer>
+              </Modal>
         </div>
     );
 }

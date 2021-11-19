@@ -8,7 +8,7 @@ import { onError } from "../lib/errorLib";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { RiTodoFill } from "react-icons/ri";
 import { GoProject } from  "react-icons/go";
-import { AiOutlineLink } from "react-icons/ai";
+import { AiOutlineLink, AiOutlineEdit } from "react-icons/ai";
 import { useParams } from "react-router-dom";
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Button, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
@@ -45,7 +45,9 @@ export default function Utente() {
   const renderEliminaTooltip = props => (
     <Tooltip {...props}>Elimina cliente</Tooltip>
   );
-
+  const renderEditTooltip = props => (
+    <Tooltip {...props}>Modifica cliente</Tooltip>
+  );
 
   const columns = [
     { id: 'ragioneSociale', label: 'RAGIONE SOCIALE', align: 'left', sortable: true, disableClickEventBubbling: true },
@@ -57,21 +59,23 @@ export default function Utente() {
     }
   ];
 
+
+ 
+  function editCliente(id){
+
+  }
+
   function eliminaCliente(id, ragioneSociale) {
     setClienteSelezionato(id);
     setRagioneSociale(ragioneSociale);
     setShowDelete(true);
-
   }
   function associaCliente(id,  ragioneSociale) {
     setClienteSelezionato(id);
     setRagioneSociale(ragioneSociale);
     loadUtenti();
     setShowAssociaAdAltroUtente(true);
-    console.log("associaCliente");
-    console.log(utenti);
-    console.log("--------------");
-
+    
   }
   function associaUtente() {
     console.log("--- ASSOCIA UTENTE AD ALTRO CLIENTE ----");
@@ -82,7 +86,6 @@ export default function Utente() {
   }
 
   async function loadClienti(){
-    console.log("--- LOAD CLIENTI ----");
      var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
@@ -98,8 +101,7 @@ export default function Utente() {
         if (result.status === 200) {
 
             result.json().then(data => {
-            //console.log(data);
-
+            
             const options = data.map(d => ({
               "value" : d.id,
               "label" : d.ragioneSociale
@@ -107,15 +109,10 @@ export default function Utente() {
             console.log(options);
 
             setClientiNonAssociati(options);
-            //
-
+            
             console.log(clientiNonAssociati);
-            /* console.log("associaUtente");
-
-            console.log("--------------");
-            */
+            
           })
-         //history.push("/utente/"+userId);
         } else {
           console.log('KO', result);
         }
@@ -264,7 +261,7 @@ export default function Utente() {
         return;
       }
 
-      console.log(userId + "UTENTE: " + nomeUtente + " "+  cognomeUtente);
+      console.log(userId + " UTENTE: " + nomeUtente + " "+  cognomeUtente);
 
       try {
         var myHeaders = new Headers();
@@ -326,7 +323,7 @@ export default function Utente() {
   function renderCustomersList(Customers) {
     return (
       <>
-        <h2 className="pb-3 mt-4 mb-3 border-bottom">I tuoi clienti</h2>
+        <h2 className="pb-3 mt-4 mb-3 border-bottom">Clienti di {nomeUtente} {cognomeUtente}</h2>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table" className="-striped -highlight">
             <TableHead>
@@ -349,7 +346,10 @@ export default function Utente() {
                     <TableCell align="center">{cliente.descrizione}</TableCell>
 
                     <TableCell align="left">
-
+                    
+                      <OverlayTrigger placement="top" overlay={renderEditTooltip}>
+                        <Button style={{marginRight: "5px"}}>  <AiOutlineEdit onClick={(e) => editCliente(cliente.id)} /> </Button>
+                      </OverlayTrigger>
                       <OverlayTrigger placement="top" overlay={renderProjectTooltip}>
                         <Button style={{marginRight: "5px"}}>  <GoProject onClick={(e) => aggiornaCliente(cliente.id)} /> </Button>
                       </OverlayTrigger>
