@@ -10,7 +10,7 @@ import Progetto from "./containers/Progetto";
 import NuovoProgetto from "./containers/NuovoProgetto";
 import NuovoDocumento from "./containers/NuovoDocumento";
 import Utente from "./containers/Utente";
-import AssociaCliente from "./containers/AssociaCliente";
+//import AssociaCliente from "./containers/AssociaCliente";
 
 export default function Routes() {
   return (
@@ -37,9 +37,11 @@ export default function Routes() {
       <Route exact path="/customers/:id">
         <Cliente />
       </Route>
+      {/** 
       <Route exact path="/customerslist">
         <AssociaCliente />
       </Route>
+      */}
       <Route exact path="/projects/new">
         <NuovoProgetto />
       </Route>

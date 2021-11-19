@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import LoaderButton from "../components/LoaderButton";
-import "./Login.css";
 import { useAppContext } from "../lib/contextLib";
 import { useHistory } from "react-router-dom";
-import { onError } from "../lib/errorLib";
 import { Button, Modal} from "react-bootstrap";
+import "./Login.css";
 
 export default function Login() {
     const history = useHistory();
@@ -42,7 +41,6 @@ export default function Login() {
                 if (response.status === 200) {
 
                     response.json().then(data => {
-                        console.log(data.nome);
                         userGetLoggedIn(data.id);
                         userHasAuthenticated(true);
                         setNomeUtente(data.nome);
@@ -58,27 +56,16 @@ export default function Login() {
                             }]
                           });
 
-                       // history.push("/utente/"+data.id);
+
                     });
 
 
-                   // history.push("/home");
                 } else {
                     //console.log('KO', response);
                     setShowError(true);
                 }
             })
-            /*  .then(result => {
-                  if (result.status === 200) {
-                      console.log('OK', result.json());
-                      userHasAuthenticated(true);
-                      //setUserId(result.)
-                      history.push("/home");
-                  } else {
-                      // console.log('KO', result);
-                      alert(result.statusText);
-                  }
-              })*/
+
             .catch(error => {
                 console.log('error', error);
                 alert(error.message);

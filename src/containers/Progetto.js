@@ -1,10 +1,9 @@
 import React, {  useState, useEffect} from "react";
 import { useParams , useLocation, useHistory} from "react-router-dom";
 import { onError } from "../lib/errorLib";
-import {  BsPlusSquare} from "react-icons/bs";
-import { LinkContainer } from "react-router-bootstrap";
+
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { AiOutlineEdit ,AiFillLike, AiFillDislike } from "react-icons/ai";
+import { AiOutlineEdit ,AiFillLike, AiFillDislike, AiOutlineReload } from "react-icons/ai";
 import ListGroup from "react-bootstrap/ListGroup";
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Typography from '@mui/material/Typography';
@@ -18,7 +17,7 @@ import Moment from 'moment';
 
 export default function ClienteNew() {
   const history = useHistory();
-  const { id, idCliente } = useParams();
+  const { id } = useParams();
   const [nomeProgetto, setNomeProgetto]             = useState("");
   const [documentoCliccato, setDocumentoCliccato]   = useState(null);
   const [nomeDoc, setNomeDocumentoCliccato]         = useState("");
@@ -26,7 +25,7 @@ export default function ClienteNew() {
   const [showApprova, setShowApprova]               = useState(false);
   const { state }  = useLocation();
   const [listaDocumenti, setDocumenti]        = useState([]);
-  const { isAuthenticated, userHasAuthenticated, userId,  userGetLoggedIn } = useAppContext();
+  const { userHasAuthenticated, userId,  userGetLoggedIn } = useAppContext();
   
 
   const renderApprovaTooltip = props => (
@@ -58,14 +57,13 @@ export default function ClienteNew() {
 
   };
 
-  function renderApprovato(dataCambioStato) {
-
+/*   function renderApprovato(dataCambioStato) {
     if(dataCambioStato != null) {
       return (<span>in data {dataCambioStato}</span>) ;
     } else {
       return (<span>Da approvare</span>) ;
     }
-  }
+  } */
 
   function renderDaApprovare(documento) {
 
@@ -317,7 +315,10 @@ export default function ClienteNew() {
   function renderDocuments() {
     return (
       <div className="documenti">
-        <h2 className="ml-2 pb-3 mt-4 mb-3 border-bottom">Documenti del progetto: {nomeProgetto}</h2>
+        <h2 className="ml-2 pb-3 mt-4 mb-3 border-bottom">
+        <Button variant="outline-success" style={{ marginRight: "10px" }} onClick={loadDocumenti}>
+          <AiOutlineReload />
+        </Button>Documenti del progetto: {nomeProgetto}</h2>
         <ListGroup>{renderDocumentsList(listaDocumenti)}</ListGroup>
         <br />
         <Button variant="outline-primary" onClick={caricaDocumento}>+ Carica documento</Button>{'    '}
@@ -329,7 +330,13 @@ export default function ClienteNew() {
     <>
 
     <Breadcrumbs aria-label="breadcrumb">
-        <Link underline="hover" color="inherit" href="/home">
+        <Link underline="hover" color="inherit" href={"/utente/"+userId}
+        onClick={() => {
+          userGetLoggedIn(userId);
+          userHasAuthenticated(true);
+          console.log("!!! ON CLICK BREADCRUMB!!!")
+        }
+        }>
           Clienti
         </Link>
         <Link

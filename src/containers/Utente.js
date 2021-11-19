@@ -1,40 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
-
+import { useHistory } from "react-router-dom";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../lib/contextLib";
-import "./Home.css";
 import { onError } from "../lib/errorLib";
 import { RiDeleteBin6Line } from "react-icons/ri";
+
 import { RiTodoFill } from "react-icons/ri";
-import { GoProject } from  "react-icons/go";
-import { AiOutlineLink, AiOutlineEdit } from "react-icons/ai";
+import { GoProject } from "react-icons/go";
+import { AiOutlineLink, AiOutlineEdit, AiOutlineReload } from "react-icons/ai";
 import { useParams } from "react-router-dom";
 import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Button, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Select from 'react-select'
 
-
-
+import "./Home.css";
 export default function Utente() {
+  const history = useHistory();
   const [customers, setCustomers] = useState([]);
   const { isAuthenticated, userId, setCustomerId, nomeUtente, cognomeUtente } = useAppContext();
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-  const history = useHistory();
-  const [showDelete, setShowDelete]                 = useState(false);
-  const [showAssociaAdAltroUtente, setShowAssociaAdAltroUtente]                 = useState(false);
-  const [showAssociaAdAltroCliente, setShowAssociaAdCliente]                 = useState(false);
-
-  const [clienteSeleazionato, setClienteSelezionato]   = useState(null);
-  const [ragioneSocialeClienteSelezionato, setRagioneSociale]         = useState("");
-
-  const [idClienteDaAssociare, setIdClienteDaAssociare]         = useState(null);
 
 
-  const [utenti, setUtenti]                           = useState([]);
+  const [showDelete, setShowDelete] = useState(false);
+  const [showAssociaAdAltroUtente, setShowAssociaAdAltroUtente] = useState(false);
+  const [showAssociaAdAltroCliente, setShowAssociaAdCliente] = useState(false);
+  const [showModificaCliente, setShowModificaCliente] = useState(false);
+  const [showAssociaConfirmaButton, setShowAssociaConfirmaButton] = useState(false);
+  
+  const [clienteSeleazionato, setClienteSelezionato] = useState(null);
+  const [ragioneSocialeClienteSelezionato, setRagioneSociale] = useState("");
+  const [idClienteDaAssociare, setIdClienteDaAssociare] = useState(null);
+  const [idUtenteDaAssociare, setIdUtenteDaAssociare] = useState(null);
+  
+  const [utenti, setUtenti] = useState([]);
   const [clientiNonAssociati, setClientiNonAssociati] = useState([]);
-
 
   const renderProjectTooltip = props => (
     <Tooltip {...props}>Vai ai progetti del cliente</Tooltip>
@@ -49,20 +49,24 @@ export default function Utente() {
     <Tooltip {...props}>Modifica cliente</Tooltip>
   );
 
+  //ELENCO COLONNE TABELLA PRINCIPALE
   const columns = [
     { id: 'ragioneSociale', label: 'RAGIONE SOCIALE', align: 'left', sortable: true, disableClickEventBubbling: true },
     { id: 'partitaIva', label: 'PARTITA IVA', align: 'center', type: 'number', disableClickEventBubbling: true },
     { id: 'Nazione', label: 'NAZIONE', align: 'center', disableClickEventBubbling: true },
     { id: 'Descrizione', label: 'NOTE', align: 'center', disableClickEventBubbling: true },
-    {
-      id: 'edit', label: '', align: 'left', disableClickEventBubbling: true
-    }
+    { id: 'edit', label: '', align: 'left', disableClickEventBubbling: true }
   ];
 
 
- 
-  function editCliente(id){
+  function confermaModificaCliente() {
 
+  }
+  function editCliente(id, ragioneSociale) {
+    setClienteSelezionato(id);
+    setRagioneSociale(ragioneSociale);
+   
+    setShowModificaCliente(true);
   }
 
   function eliminaCliente(id, ragioneSociale) {
@@ -70,23 +74,23 @@ export default function Utente() {
     setRagioneSociale(ragioneSociale);
     setShowDelete(true);
   }
-  function associaCliente(id,  ragioneSociale) {
+
+  function associaCliente(id, ragioneSociale) {
     setClienteSelezionato(id);
+    setIdClienteDaAssociare(id);
     setRagioneSociale(ragioneSociale);
     loadUtenti();
+   
     setShowAssociaAdAltroUtente(true);
-    
   }
   function associaUtente() {
-    console.log("--- ASSOCIA UTENTE AD ALTRO CLIENTE ----");
 
     loadClienti();
     setShowAssociaAdCliente(true);
-
   }
 
-  async function loadClienti(){
-     var myHeaders = new Headers();
+  async function loadClienti() {
+    var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
@@ -96,22 +100,20 @@ export default function Utente() {
     };
 
 
-    fetch("http://localhost:8080/customers/not/"+id, requestOptions)
+    fetch("http://localhost:8080/customers/not/" + id, requestOptions)
       .then(result => {
         if (result.status === 200) {
 
-            result.json().then(data => {
-            
+          result.json().then(data => {
+
             const options = data.map(d => ({
-              "value" : d.id,
-              "label" : d.ragioneSociale
+              "value": d.id,
+              "label": d.ragioneSociale
             }));
-            console.log(options);
 
             setClientiNonAssociati(options);
-            
-            console.log(clientiNonAssociati);
-            
+
+
           })
         } else {
           console.log('KO', result);
@@ -123,38 +125,60 @@ export default function Utente() {
       });
   }
 
-  function confermaAssociazione(){
-
-  }
-
-  function confermaAssociazioneAltroCliente(l){
+  function confermaAssociazione() {
     var myHeaders = new Headers();
-     myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Content-Type", "application/json");
 
-     var raw = JSON.stringify({
+    var raw = JSON.stringify({
       "idClienteDaAggiungere": idClienteDaAssociare,
-      "idUtente": id
+      "idUtente": idUtenteDaAssociare
     });
-     var requestOptions = {
+    var requestOptions = {
       method: 'POST',
       headers: myHeaders,
       body: raw,
       redirect: 'follow'
     };
 
-    fetch("http://localhost:8080/users/addCliente" , requestOptions)
-    .then(response => {
-      if (response.status === 200) {
-        loadCustomers();
-        setShowAssociaAdCliente(false);
-      }
-    })
-    .catch(error => {
-      console.log('error', error);
-      alert(error.message);
+    fetch("http://localhost:8080/users/addCliente", requestOptions)
+      .then(response => {
+        if (response.status === 200) {
+          loadCustomers();
+          setShowAssociaAdAltroUtente(false);
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+        alert(error.message);
+      });
+  }
+
+  function confermaAssociazioneAltroCliente() {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      "idClienteDaAggiungere": idClienteDaAssociare,
+      "idUtente": id
     });
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
 
-
+    fetch("http://localhost:8080/users/addCliente", requestOptions)
+      .then(response => {
+        if (response.status === 200) {
+          loadCustomers();
+          setShowAssociaAdCliente(false);
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+        alert(error.message);
+      });
   }
 
   function aggiornaCliente(id) {
@@ -168,7 +192,7 @@ export default function Utente() {
 
   }
 
-  function confermaEliminazione(){
+  function confermaEliminazione() {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
@@ -178,21 +202,21 @@ export default function Utente() {
     };
 
     fetch("http://localhost:8080/customers/" + clienteSeleazionato, requestOptions)
-    .then(response => {
-      if (response.status === 200) {
-        loadCustomers();
+      .then(response => {
+        if (response.status === 200) {
+          loadCustomers();
 
-      }
-    })
-    .catch(error => {
-      console.log('error', error);
-      alert(error.message);
-    });
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+        alert(error.message);
+      });
 
     setShowDelete(false);
   }
 
-  function loadCustomers(){
+  function loadCustomers() {
     try {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -223,7 +247,7 @@ export default function Utente() {
     }
   }
 
-  function loadUtenti(){
+  function loadUtenti() {
     try {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -233,15 +257,19 @@ export default function Utente() {
         redirect: 'follow'
       };
 
-      fetch("http://localhost:8080/users/"+userId, requestOptions)
+      fetch("http://localhost:8080/users/" + userId, requestOptions)
         //.then(response =>  response.text())
         .then(response => {
           if (response.status === 200) {
             response.json().then(data => {
-               console.log(data);
-              //setCustomers(data);
-              setUtenti(data);
-              console.log(utenti);
+
+              const options = data.map(d => ({
+                "value": d.id,
+                "label": d.nome + " " + d.cognome
+              }));
+              
+              setUtenti(options);
+     
             })
           }
         })
@@ -261,7 +289,7 @@ export default function Utente() {
         return;
       }
 
-      console.log(userId + " UTENTE: " + nomeUtente + " "+  cognomeUtente);
+      console.log(userId + " UTENTE: " + nomeUtente + " " + cognomeUtente);
 
       try {
         var myHeaders = new Headers();
@@ -303,7 +331,18 @@ export default function Utente() {
     setIdClienteDaAssociare(e.value);
   }
 
-  function creaCliente(){
+  function handleUtentiSelectChange(e) {
+
+    if (e.value != null){
+      setShowAssociaConfirmaButton(true);
+      setIdUtenteDaAssociare(e.value);
+      console.log("CLIENTE " + idClienteDaAssociare);
+      console.log("UTENTE " + idUtenteDaAssociare);
+    }
+   
+  }
+
+  function creaCliente() {
     history.push({
       pathname: `/customers/new`,
       state: [{
@@ -312,18 +351,25 @@ export default function Utente() {
     });
   }
 
-  function checkAltriClienti(){
-    if(clientiNonAssociati.length == 0) {
-      return true;
-    }else{
+  function checkAltriClienti() {
+    if (clientiNonAssociati.length > 0) {
       return false;
+    } else {
+      return true;
     }
   }
 
   function renderCustomersList(Customers) {
     return (
       <>
-        <h2 className="pb-3 mt-4 mb-3 border-bottom">Clienti di {nomeUtente} {cognomeUtente}</h2>
+       
+        <h2 className="pb-3 mt-4 mb-3 border-bottom">
+        <Button variant="outline-success" style={{ marginRight: "10px" }} onClick={loadCustomers}>
+          <AiOutlineReload />
+        </Button>
+        Clienti di {nomeUtente} {cognomeUtente}
+        
+        </h2>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table" className="-striped -highlight">
             <TableHead>
@@ -346,18 +392,18 @@ export default function Utente() {
                     <TableCell align="center">{cliente.descrizione}</TableCell>
 
                     <TableCell align="left">
-                    
+
                       <OverlayTrigger placement="top" overlay={renderEditTooltip}>
-                        <Button style={{marginRight: "5px"}}>  <AiOutlineEdit onClick={(e) => editCliente(cliente.id)} /> </Button>
+                        <Button style={{ marginRight: "5px" }}>  <AiOutlineEdit onClick={(e) => editCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
                       </OverlayTrigger>
                       <OverlayTrigger placement="top" overlay={renderProjectTooltip}>
-                        <Button style={{marginRight: "5px"}}>  <GoProject onClick={(e) => aggiornaCliente(cliente.id)} /> </Button>
+                        <Button style={{ marginRight: "5px" }}>  <GoProject onClick={(e) => aggiornaCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
                       </OverlayTrigger>
                       <OverlayTrigger placement="top" overlay={renderAssociaTooltip}>
-                      <Button style={{marginRight: "5px"}}>  <AiOutlineLink onClick={(e) => associaCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
+                        <Button style={{ marginRight: "5px" }}>  <AiOutlineLink onClick={(e) => associaCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
                       </OverlayTrigger>
                       <OverlayTrigger placement="top" overlay={renderEliminaTooltip}>
-                      <Button> <RiDeleteBin6Line onClick={(e) => eliminaCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
+                        <Button> <RiDeleteBin6Line onClick={(e) => eliminaCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
                       </OverlayTrigger>
                       <Modal show={showDelete} onHide={() => setShowDelete(false)} animation={false}>
                         <Modal.Header closeButton>
@@ -375,20 +421,36 @@ export default function Utente() {
                       </Modal>
                       <Modal show={showAssociaAdAltroUtente} onHide={() => setShowAssociaAdAltroUtente(false)} animation={false}>
                         <Modal.Header closeButton>
-                          <Modal.Title> Associare il cliente {ragioneSocialeClienteSelezionato} ad un altro utente</Modal.Title>
+                          <Modal.Title>Associare il cliente {ragioneSocialeClienteSelezionato} ad un altro utente</Modal.Title>
                         </Modal.Header>
                         <Modal.Body >
-                          <div align="center">
-
-                          <RiTodoFill size={"150px"}/>
-                          <br /> <br />TODO
-                        </div>
+                        <Select options={utenti} onChange={handleUtentiSelectChange} />
                         </Modal.Body>
                         <Modal.Footer>
                           <Button variant="secondary" onClick={() => setShowAssociaAdAltroUtente(false)}>
                             Annulla
                           </Button>
-                          <Button variant="primary" onClick={(e) => confermaAssociazione()} disabled="true">
+                          <Button variant="primary" onClick={(e) => confermaAssociazione()} disabled={!showAssociaConfirmaButton}>
+                            Conferma
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+                    
+                      <Modal show={showModificaCliente} onHide={() => setShowModificaCliente(false)} animation={false}>
+                        <Modal.Header closeButton>
+                          <Modal.Title> Modifica cliente {ragioneSocialeClienteSelezionato}</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body >
+                          <div align="center">
+                            <RiTodoFill size={"150px"} />
+                            <br /> <br />TODO
+                          </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button variant="secondary" onClick={() => setShowModificaCliente(false)}>
+                            Annulla
+                          </Button>
+                          <Button variant="primary" onClick={(e) => confermaModificaCliente()} disabled="true">
                             Conferma
                           </Button>
                         </Modal.Footer>
@@ -398,13 +460,13 @@ export default function Utente() {
                           <Modal.Title>Associare l'utente a Cliente già esistente</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>Associare l'utente ad uno dei seguenti clienti
-                        <Select options={clientiNonAssociati} onChange={handleSelectChange} />
+                          <Select options={clientiNonAssociati} onChange={handleSelectChange} />
                         </Modal.Body>
                         <Modal.Footer>
                           <Button variant="secondary" onClick={() => setShowAssociaAdCliente(false)}>
                             Annulla
                           </Button>
-                          <Button variant="primary" onClick={confermaAssociazioneAltroCliente}  disabled={checkAltriClienti()}>
+                          <Button variant="primary" onClick={confermaAssociazioneAltroCliente} disabled={checkAltriClienti()}>
                             Conferma
                           </Button>
                         </Modal.Footer>
@@ -418,9 +480,6 @@ export default function Utente() {
 
           </Table>
         </TableContainer>
-
-
-
       </>
     );
   }
@@ -439,8 +498,7 @@ export default function Utente() {
       <div className="customers">
 
         <ListGroup>{!isLoading && renderCustomersList(customers)}</ListGroup>
-
-          <br />
+        <br />
         <Button variant="outline-primary" onClick={creaCliente}>+ Crea nuovo cliente</Button>{'    '}
         <Button variant="outline-secondary" onClick={associaUtente}>{">"} Associa altro cliente</Button>{' '}
       </div>
