@@ -1,7 +1,7 @@
 # Frontend dell'applicazione web iDocs
 Sviluppato con framework REACT + Bootstrap 
 
-# Per eseguire in locale in modalità DEV: 
+## Per eseguire in locale in modalità DEV: 
 > npm start
 
 ### Todo List
