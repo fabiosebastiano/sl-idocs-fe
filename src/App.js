@@ -6,6 +6,8 @@ import Nav from "react-bootstrap/Nav";
 import { LinkContainer } from "react-router-bootstrap";
 import { AppContext } from "./lib/contextLib";
 import { useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
 function App() {
 
   const [isAuthenticated, userHasAuthenticated] = useState(false);
@@ -14,7 +16,7 @@ function App() {
   const [nomeUtente, setNomeUtente] = useState();
   const [cognomeUtente, setCognomeUtente] = useState();
   const history = useHistory();
-  
+  const { id } = useParams();
   function handleLogout() {
     userHasAuthenticated(false);
     userGetLoggedIn();
@@ -25,7 +27,10 @@ function App() {
   }
 
   useEffect(() => {
-    console.log(">>>>> CARICAMENTO APP con userAutenticated= "+ isAuthenticated);
+    console.log(">>>>> CARICAMENTO APP con userAutenticated "+ isAuthenticated);
+    console.log(">>>>> CARICAMENTO APP con userId "+ userId);
+    console.log(">>>>> CARICAMENTO APP con customerId "+ customerId);
+    console.log(">>>>> CARICAMENTO APP con PATH id "+ id);
   }, [isAuthenticated]);
 
 

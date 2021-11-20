@@ -4,6 +4,9 @@ import Button from "react-bootstrap/Button";
 import "./Signup.css";
 import { useAppContext } from "../lib/contextLib";
 import { useHistory } from "react-router-dom";
+import { Modal } from "react-bootstrap";
+import { BiErrorCircle } from "react-icons/bi";
+
 
 export default function Signup() {
   const [nome, setNome] = useState("");
@@ -11,11 +14,22 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { userHasAuthenticated } = useAppContext();
+  const [confirmPassword, setConfirmPassword] = useState("");
   const history = useHistory();
+  const { userHasAuthenticated, userGetLoggedIn, setNomeUtente, setCognomeUtente } = useAppContext();
+
+  const [showOk, setShowOk] = useState(false);
+  const [showError, setShowError] =  useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  function handleFieldChange(){
+    console.log("---- handleFieldChange ----");
+
+  }
 
   function validateForm() {
-    return username.length > 0 && password.length > 0;
+    return username.length > 0 && password.length > 0 && confirmPassword.length > 0 && password === confirmPassword && email.length > 0 && nome.length > 0 && cognome.length > 0;
+   // return username.length > 0 && email.length > 0 && password > 0 && password === confirmPassword
   }
 
   function handleSubmit(event) {
@@ -31,7 +45,6 @@ export default function Signup() {
       "mail": email
     });
 
- 
     var requestOptions = {
       method: 'POST',
       headers: myHeaders,
@@ -43,10 +56,31 @@ export default function Signup() {
       .then(result => {
         if (result.status === 200) {
            userHasAuthenticated(true);
-          history.push("/home");
+           result.json().then(data => {
+            console.log(data);
+            userGetLoggedIn(data.id);
+            userHasAuthenticated(true);
+            setNomeUtente(data.nome);
+            setCognomeUtente(data.cognome);
+            history.push({
+              pathname: `/utente/${data.id}`,
+              state: [{
+                userId: data.id,
+                nomeUtente: data.nome,
+                cognomeUtente: data.cognome
+              }]
+            });
+           
+           });
         } else {
-          console.log('KO', result);
-          //alert(result.statusText);
+          console.log("######  KO CREAZIONE ##########");
+         // console.log('KO', result);
+        /*  result.json().then(data => {
+            console.log(data)
+          });
+          */
+          setErrorMessage("ERRORE REGISTRAZIONE NUOVO UTENTE");
+          setShowError(true);
         }
       })
       .catch(error => {
@@ -101,12 +135,54 @@ export default function Signup() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+        <Form.Group controlId="confirmPassword" size="lg">
+          <Form.Label>Conferma Password</Form.Label>
+          <Form.Label>Conferma Password</Form.Label>
+          
+          <Form.Control
+            type="password"
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={confirmPassword}
+          />
+        </Form.Group>
+
         </Form.Group>
 
         <Button block size="lg" type="submit" disabled={!validateForm()} variant="success">
           Crea Utente
         </Button>
-      </Form>
+      </Form> 
+      <Modal show={showOk} onHide={() => setShowOk(false)} animation={false}>
+        <Modal.Header closeButton>
+            <Modal.Title>Registrazione avvenuta con successo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body >
+            <div align="center">
+            Registrazione avvenuta con successo
+        </div>
+        </Modal.Body>
+        <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowError(false)}>
+            Chiudi
+            </Button>
+        </Modal.Footer>
+      </Modal> 
+
+      <Modal show={showError} onHide={() => setShowError(false)} animation={false}>
+        <Modal.Header closeButton>
+            <Modal.Title><BiErrorCircle /> Attenzione</Modal.Title>
+        </Modal.Header>
+        <Modal.Body >
+            <div align="center">
+            {errorMessage}
+        </div>
+        </Modal.Body>
+        <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowError(false)}>
+            Chiudi
+            </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

@@ -47,8 +47,6 @@ export default function NuovoCliente() {
         redirect: 'follow'
       };
 
-      console.log(raw);
-
       fetch("http://localhost:8080/projects", requestOptions)
         .then(result => {
           if (result.status === 200) {
@@ -67,7 +65,6 @@ export default function NuovoCliente() {
 
 
   }
-  console.log(state);
   return (
 
     <div className="NuovoProgetto" >

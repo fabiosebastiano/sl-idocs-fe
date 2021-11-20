@@ -284,11 +284,16 @@ export default function Utente() {
   }
 
   useEffect(() => {
+    console.log(">>>>> CARICAMENTO UTENTE con userAutenticated "+ isAuthenticated);
+    console.log(">>>>> CARICAMENTO UTENTE con userId "+ userId);
+    console.log(">>>>> CARICAMENTO UTENTE con PATH id "+ id);
+
     async function onLoad() {
+      /*
       if (!isAuthenticated) {
         return;
       }
-
+      */
       console.log(userId + " UTENTE: " + nomeUtente + " " + cognomeUtente);
 
       try {
@@ -336,8 +341,7 @@ export default function Utente() {
     if (e.value != null){
       setShowAssociaConfirmaButton(true);
       setIdUtenteDaAssociare(e.value);
-      console.log("CLIENTE " + idClienteDaAssociare);
-      console.log("UTENTE " + idUtenteDaAssociare);
+   
     }
    
   }

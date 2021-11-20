@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { onError } from "../lib/errorLib";
 import {  AiOutlineEdit, AiOutlineReload } from "react-icons/ai";
-
+import {RiTodoFill } from  "react-icons/ri";
 import { HiOutlineDocumentDuplicate} from "react-icons/hi";
+
+
 import ListGroup from "react-bootstrap/ListGroup";
 import { useAppContext } from "../lib/contextLib";
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import { useHistory } from "react-router-dom";
-import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Table, TableContainer, TableHead, TableRow, TableCell, TableBody, Typography } from "@mui/material";
 import { Button, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
@@ -23,7 +25,8 @@ export default function ClienteNew() {
   const [nomeProgettoSelezionato, setNomeProgetto] = useState("");
   const [progettoSelezionato, setProgettoSelezionato] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
-
+  const { isAuthenticated, userHasAuthenticated } = useAppContext();
+  const [showModificaProgetto, setShowModificaProgetto] = useState(false);
 
   const renderDocsTooltip = props => (
     <Tooltip {...props}>Vai ai documenti del progetto</Tooltip>
@@ -48,7 +51,7 @@ export default function ClienteNew() {
   ];
 
   function editProgetto(id, nome){
-
+    setShowModificaProgetto(true);
   };
 
   function loadCliente() {
@@ -81,7 +84,10 @@ export default function ClienteNew() {
   }
 
   useEffect(() => {
+    userHasAuthenticated(true);
 
+    console.log(">>>>> CARICAMENTO CLIENTE con userAutenticated "+ isAuthenticated);
+   
     async function onLoad() {
       try {
         loadCliente();
@@ -260,23 +266,25 @@ export default function ClienteNew() {
                           </Button>
                         </Modal.Footer>
                       </Modal>
-                      {/*
-                      <Modal show={showAssociaAdAltroUtente} onHide={() => setShowAssociaAdAltroUtente(false)} animation={false}>
+                      <Modal show={showModificaProgetto} onHide={() => setShowModificaProgetto(false)} animation={false}>
                         <Modal.Header closeButton>
-                          <Modal.Title>{nomeProgettoSelezionato}</Modal.Title>
+                          <Modal.Title> Modifica progetto {nomeProgettoSelezionato}</Modal.Title>
                         </Modal.Header>
-                        <Modal.Body>Associare il progetto ad uno dei seguenti utenti
+                        <Modal.Body >
+                          <div align="center">
+                            <RiTodoFill size={"150px"} />
+                            <br /> <br />TODO
+                          </div>
                         </Modal.Body>
                         <Modal.Footer>
-                          <Button variant="secondary" onClick={() => setShowAssociaAdAltroUtente(false)}>
+                          <Button variant="secondary" onClick={() => setShowModificaProgetto(false)}>
                             Annulla
                           </Button>
-                          <Button variant="primary" onClick={(e) => confermaAssociazione()} >
+                          <Button variant="primary" disabled="true">
                             Conferma
                           </Button>
                         </Modal.Footer>
                       </Modal>
-                      */}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -312,7 +320,7 @@ export default function ClienteNew() {
         <Link underline="hover" color="inherit" href={"/utente/" + id}>
           Clienti
         </Link>
-
+        <Typography color="text.primary">Progetti</Typography>
       </Breadcrumbs>
       <div>
         {renderProjects()}

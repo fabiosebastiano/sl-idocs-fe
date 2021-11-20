@@ -15,8 +15,9 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+
+    console.log(">>>>> HOME CON IS AUTH? ", isAuthenticated);
     async function onLoad() {
-      console.log(">>>>> HOME CON UTENTE: ", userId);
       if (!isAuthenticated) {
         return;
       }
