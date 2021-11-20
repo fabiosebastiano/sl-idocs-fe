@@ -71,7 +71,6 @@ export default function Login() {
                 alert(error.message);
             });
 
-        console.log("-------------");
     }
 
     return (

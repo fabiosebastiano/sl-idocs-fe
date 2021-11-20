@@ -78,7 +78,7 @@ export default function ClienteNew() {
   }
 
   useEffect(() => {
-    console.log("######## CARICAMENTO PROGETTO con utente "+ userId);
+   // console.log("######## CARICAMENTO PROGETTO con utente "+ userId);
     function loadProgetto() {
 
       var myHeaders = new Headers();
@@ -133,7 +133,7 @@ export default function ClienteNew() {
           if (response.status === 200) {
             response.json().then(data => {
               setDocumenti(data);
-              console.log(data);
+              //console.log(data);
             })
           }
         })
@@ -332,17 +332,23 @@ export default function ClienteNew() {
 
     <Breadcrumbs aria-label="breadcrumb">
         <Link underline="hover" color="inherit" 
-         href={'/utente/'+userId}
-         to={'/utente/'+userId}
+        // href={'/utente/'+userId}
          state={
-           { userHasAuthenticated: true, 
-            userId: userId
+           { 
+              userHasAuthenticated: true, 
+              userId: userId
            }
           }
           onClick={() => {
           userGetLoggedIn(userId);
           userHasAuthenticated(true);
-          console.log("!!! ON CLICK UTENTE!!!")
+          history.push({
+            pathname: `/utente/`+userId,
+            state: [{
+              clientId: id
+            }]
+          });
+        //  console.log("!!! ON CLICK UTENTE!!!")
         }
         }>
           Clienti

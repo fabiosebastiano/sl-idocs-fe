@@ -20,21 +20,18 @@ export default function Utente() {
   const { isAuthenticated, userId, setCustomerId, nomeUtente, cognomeUtente } = useAppContext();
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-
-
   const [showDelete, setShowDelete] = useState(false);
   const [showAssociaAdAltroUtente, setShowAssociaAdAltroUtente] = useState(false);
   const [showAssociaAdAltroCliente, setShowAssociaAdCliente] = useState(false);
   const [showModificaCliente, setShowModificaCliente] = useState(false);
   const [showAssociaConfirmaButton, setShowAssociaConfirmaButton] = useState(false);
-  
   const [clienteSeleazionato, setClienteSelezionato] = useState(null);
   const [ragioneSocialeClienteSelezionato, setRagioneSociale] = useState("");
   const [idClienteDaAssociare, setIdClienteDaAssociare] = useState(null);
   const [idUtenteDaAssociare, setIdUtenteDaAssociare] = useState(null);
-  
   const [utenti, setUtenti] = useState([]);
   const [clientiNonAssociati, setClientiNonAssociati] = useState([]);
+    
 
   const renderProjectTooltip = props => (
     <Tooltip {...props}>Vai ai progetti del cliente</Tooltip>
@@ -284,17 +281,13 @@ export default function Utente() {
   }
 
   useEffect(() => {
-    console.log(">>>>> CARICAMENTO UTENTE con userAutenticated "+ isAuthenticated);
-    console.log(">>>>> CARICAMENTO UTENTE con userId "+ userId);
-    console.log(">>>>> CARICAMENTO UTENTE con PATH id "+ id);
-
+   // console.log(">>>>> UTENTE con LOCATION "+ location.pathname);
     async function onLoad() {
       /*
       if (!isAuthenticated) {
         return;
       }
       */
-      console.log(userId + " UTENTE: " + nomeUtente + " " + cognomeUtente);
 
       try {
         var myHeaders = new Headers();
@@ -324,12 +317,11 @@ export default function Utente() {
       } catch (e) {
         onError(e);
       }
-
-
     }
     setIsLoading(false);
     onLoad();
   }, [isAuthenticated, userId, setCustomerId]);
+//}, []);
 
   function handleSelectChange(e) {
 
@@ -372,7 +364,6 @@ export default function Utente() {
           <AiOutlineReload />
         </Button>
         Clienti di {nomeUtente} {cognomeUtente}
-        
         </h2>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table" className="-striped -highlight">
@@ -491,7 +482,7 @@ export default function Utente() {
   function renderLander() {
     return (
       <div className="lander">
-        <h1>iDcos</h1>
+        <h1>iDocs</h1>
         <p className="text-muted">Gestione Documentale</p>
       </div>
     );
@@ -510,8 +501,9 @@ export default function Utente() {
   }
 
   return (
-    <div className="Utente">
-      {isAuthenticated ? renderCustomers() : renderLander()}
+    <div>
+      { renderCustomers() }
+     {/**  {isAuthenticated ? renderCustomers() : renderLander()}*/}
     </div>
   );
 }

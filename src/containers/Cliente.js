@@ -17,7 +17,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 
 export default function ClienteNew() {
 
-  const { id,  } = useParams();
+  const { id  } = useParams();
 
   const history = useHistory();
   const [ragioneSociale, setRagioneSociale] = useState("");
@@ -25,7 +25,7 @@ export default function ClienteNew() {
   const [nomeProgettoSelezionato, setNomeProgetto] = useState("");
   const [progettoSelezionato, setProgettoSelezionato] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
-  const { isAuthenticated, userHasAuthenticated } = useAppContext();
+  const { isAuthenticated, userHasAuthenticated,  userId, userGetLoggedIn} = useAppContext();
   const [showModificaProgetto, setShowModificaProgetto] = useState(false);
 
   const renderDocsTooltip = props => (
@@ -86,7 +86,7 @@ export default function ClienteNew() {
   useEffect(() => {
     userHasAuthenticated(true);
 
-    console.log(">>>>> CARICAMENTO CLIENTE con userAutenticated "+ isAuthenticated);
+//    console.log(">>>>> CARICAMENTO CLIENTE con userAutenticated "+ isAuthenticated);
    
     async function onLoad() {
       try {
@@ -212,7 +212,6 @@ export default function ClienteNew() {
         clientId: id
       }]
     });
-
   }
 
   function renderProjectsList(progetti) {
@@ -317,7 +316,22 @@ export default function ClienteNew() {
   return (
     <>
       <Breadcrumbs aria-label="breadcrumb">
-        <Link underline="hover" color="inherit" href={"/utente/" + id}>
+        <Link underline="hover" color="inherit" 
+       // href={"/utente/" + userId}
+        //href={""}
+        
+        onClick={() => {
+          userGetLoggedIn(userId);
+          userHasAuthenticated(true);
+          
+          history.push({
+            pathname: `/utente/`+userId,
+            state: [{
+              clientId: id
+            }]
+          });
+        }}
+        >
           Clienti
         </Link>
         <Typography color="text.primary">Progetti</Typography>
