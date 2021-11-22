@@ -25,56 +25,58 @@ export default function NewNote() {
     event.preventDefault();
 
     const idProgetto = state[0].projectId;
-      
-    if (isAnnulla){
+
+    if (isAnnulla) {
       history.push({
         pathname: `/projects/${idProgetto}`,
         state: [{
           clientId: state[0].clientId
         }]
       });
-    }else {
-    
-      
+    } else {
+
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
-    var raw = JSON.stringify({
-      "idProgetto": idProgetto,
-      "nome": file.current.name.split('.')[0],
-      "dimensione": file.current.size,
-      "estensione": file.current.name.split('.')[1],
-      "descrizione": descrizione
-    });
-
-
-    var requestOptions = {
-      method: 'POST',
-      headers: myHeaders,
-      body: raw,
-      redirect: 'follow'
-    };
-
-
-    fetch("http://localhost:8080/docs", requestOptions)
-      .then(result => {
-        if (result.status === 200) {
-          history.push({
-            pathname: `/projects/${idProgetto}`,
-            state: [{
-              clientId: state[0].clientId
-            }]
-          });
-        } else {
-          console.log('KO', result);
-          //alert(result.statusText);
-        }
-      })
-      .catch(error => {
-        console.log('error', error);
-        alert(error.message);
+      var raw = JSON.stringify({
+        "idProgetto": idProgetto,
+        "nome": file.current.name.split('.')[0],
+        "dimensione": file.current.size,
+        "estensione": file.current.name.split('.')[1],
+        "descrizione": descrizione
       });
-    //setIsLoading(true);
+
+
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+
+
+      fetch("http://localhost:8080/docs", requestOptions)
+        .then(result => {
+          if (result.status === 200) {
+           
+             history.push({
+            pathname: `/projects/${idProgetto}`,
+              state: [{
+                clientId: state[0].clientId,
+                userId: state[0].useriD,
+              }]
+            });
+            
+          } else {
+            console.log('KO', result);
+            //alert(result.statusText);
+          }
+        })
+        .catch(error => {
+          console.log('error', error);
+          alert(error.message);
+        });
+      //setIsLoading(true);
     }
 
   }
@@ -83,7 +85,7 @@ export default function NewNote() {
     <div className="NuovoDocumento">
       <h4>{state[0].nomeProgetto}: carica documento</h4>
       <br />
-      <Form.Label>Descrizione del documento </Form.Label> 
+      <Form.Label>Descrizione del documento </Form.Label>
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="content">
           <Form.Control
@@ -101,7 +103,7 @@ export default function NewNote() {
           size="lg"
           variant="secondary"
           isLoading={isLoading}
-         
+
           onClick={() => setAnnulla(true)}
         >
           Annulla

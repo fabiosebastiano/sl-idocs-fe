@@ -2,7 +2,8 @@ import React, {  useState, useEffect} from "react";
 import { useParams , useLocation, useHistory} from "react-router-dom";
 import { onError } from "../lib/errorLib";
 
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin6Line, RiTodoFill } from "react-icons/ri";
+
 import { AiOutlineEdit ,AiFillLike, AiFillDislike, AiOutlineReload } from "react-icons/ai";
 import ListGroup from "react-bootstrap/ListGroup";
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -26,7 +27,8 @@ export default function ClienteNew() {
   const { state }  = useLocation();
   const [listaDocumenti, setDocumenti]        = useState([]);
   const { userHasAuthenticated, userId,  userGetLoggedIn } = useAppContext();
-  
+  const [showModificaDocumento, setShowModificaDocumento] = useState(false);
+
 
   const renderApprovaTooltip = props => (
     <Tooltip {...props}>Approva o rifiuta il documento</Tooltip>
@@ -53,8 +55,11 @@ export default function ClienteNew() {
     }}
   ];
 
-  function editDocumento(id, nome){
+  function editDocumento(id, nome, estensione){
+    setDocumentoCliccato(id);
+    setNomeDocumentoCliccato(nome+"."+estensione);
 
+    setShowModificaDocumento(true);
   };
 
 /*   function renderApprovato(dataCambioStato) {
@@ -78,7 +83,7 @@ export default function ClienteNew() {
   }
 
   useEffect(() => {
-   // console.log("######## CARICAMENTO PROGETTO con utente "+ userId);
+  
     function loadProgetto() {
 
       var myHeaders = new Headers();
@@ -106,14 +111,13 @@ export default function ClienteNew() {
     async function onLoad() {
       try {
           loadProgetto();
+          //loadDoc();
           loadDocumenti();
       } catch (e) {
         onError(e);
       }
 
     }
-
-
     onLoad();
 
   }, [id]);
@@ -143,8 +147,6 @@ export default function ClienteNew() {
         });
 
   }
-
-
 
   function cambiaStatoDocumento(idDocumento, isApproved) {
     var myHeaders = new Headers();
@@ -226,7 +228,8 @@ export default function ClienteNew() {
       state: [{
         projectId: id,
         nomeProgetto: nomeProgetto, 
-        clientId: state[0].clientId 
+        clientId: state[0].clientId,
+        userId: userId
       }]
     });
 
@@ -262,7 +265,7 @@ export default function ClienteNew() {
                     Moment(documento.dataCaricamento).format('DD/MM/YYYY')
                     }</TableCell>
                   <TableCell align="center" className="font-weight-bold">{documento.stato}</TableCell>
-                  <TableCell align="left">
+                  <TableCell align="right">
                   <OverlayTrigger placement="top" overlay={renderEditTooltip}>
                         <Button style={{marginRight: "5px"}}>  <AiOutlineEdit onClick={(e) => editDocumento(documento.id, documento.nome, documento.estensione)} /> </Button>
                       </OverlayTrigger>
@@ -271,9 +274,40 @@ export default function ClienteNew() {
                       <RiDeleteBin6Line size={17}  onClick={(e)=> eliminaDocumento(documento.id, documento.nome, documento.estensione)}/>
                     </Button>
                     </OverlayTrigger>
+                    
+                    {
+                      renderDaApprovare(documento)
+                    }
+                  </TableCell>
+              </TableRow>
+              ))}
+
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Modal show={showModificaDocumento} onHide={() => setShowModificaDocumento(false)} animation={false}>
+                        <Modal.Header closeButton>
+                          <Modal.Title> Modifica documento <b>{nomeDoc}</b></Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body >
+                          <div align="center">
+                            <RiTodoFill size={"150px"} />
+                            <br /> <br />TODO
+                          </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Button variant="secondary" onClick={() => setShowModificaDocumento(false)}>
+                            Annulla
+                          </Button>
+                          <Button variant="primary" disabled="true">
+                            Conferma
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
+
                     <Modal show={showDelete} onHide={() => setShowDelete(false)} animation={false}>
                     <Modal.Header closeButton>
-                      <Modal.Title>Cancellare il documento {nomeDoc}?</Modal.Title>
+                      <Modal.Title>Cancellare il documento <b>{nomeDoc}</b> ?</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>L'operazione non è reversibile</Modal.Body>
                     <Modal.Footer>
@@ -287,7 +321,7 @@ export default function ClienteNew() {
                   </Modal>
                   <Modal show={showApprova} onHide={() => setShowApprova(false)} animation={false} >
                   <Modal.Header closeButton>
-                    <Modal.Title>Approvazione documento <h5>{nomeDoc}</h5></Modal.Title>
+                    <Modal.Title><b>{nomeDoc}</b></Modal.Title>
                   </Modal.Header>
                     <Modal.Body>
                         <h3 align="center">Vuoi approvare o rifiutare il documento?</h3>
@@ -296,19 +330,7 @@ export default function ClienteNew() {
                           <Button style={{backgroundColor:"#13996c80"} }onClick={(e)=> approvaDocumento(id)}><AiFillLike size={30} className="float-right" />Approva</Button>
                         </div>
                     </Modal.Body>
-
                 </Modal>
-                    {
-                      renderDaApprovare(documento)
-                    }
-                  </TableCell>
-              </TableRow>
-              ))}
-
-          </TableBody>
-        </Table>
-      </TableContainer>
-     
       </>
     );
   }
@@ -319,7 +341,7 @@ export default function ClienteNew() {
         <h2 className="ml-2 pb-3 mt-4 mb-3 border-bottom">
         <Button variant="outline-success" style={{ marginRight: "10px" }} onClick={loadDocumenti}>
           <AiOutlineReload />
-        </Button>Documenti del progetto: {nomeProgetto}</h2>
+        </Button>Documenti del progetto <b>{nomeProgetto}</b> </h2>
         <ListGroup>{renderDocumentsList(listaDocumenti)}</ListGroup>
         <br />
         <Button variant="outline-primary" onClick={caricaDocumento}>+ Carica documento</Button>{'    '}
@@ -348,7 +370,6 @@ export default function ClienteNew() {
               clientId: id
             }]
           });
-        //  console.log("!!! ON CLICK UTENTE!!!")
         }
         }>
           Clienti
@@ -360,7 +381,6 @@ export default function ClienteNew() {
           onClick={() => {
             userGetLoggedIn(userId);
             userHasAuthenticated(true);
-            console.log("!!! ON CLICK CUSTOMER!!!")
           }
           }
         >

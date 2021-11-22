@@ -22,11 +22,6 @@ export default function Signup() {
   const [showError, setShowError] =  useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  function handleFieldChange(){
-    console.log("---- handleFieldChange ----");
-
-  }
-
   function validateForm() {
     return username.length > 0 && password.length > 0 && confirmPassword.length > 0 && password === confirmPassword && email.length > 0 && nome.length > 0 && cognome.length > 0;
    // return username.length > 0 && email.length > 0 && password > 0 && password === confirmPassword
@@ -57,28 +52,25 @@ export default function Signup() {
         if (result.status === 200) {
            userHasAuthenticated(true);
            result.json().then(data => {
-            console.log(data);
-            userGetLoggedIn(data.id);
-            userHasAuthenticated(true);
-            setNomeUtente(data.nome);
-            setCognomeUtente(data.cognome);
-            history.push({
-              pathname: `/utente/${data.id}`,
-              state: [{
-                userId: data.id,
-                nomeUtente: data.nome,
-                cognomeUtente: data.cognome
-              }]
-            });
+                
+                userGetLoggedIn(data.id);
+                userHasAuthenticated(true);
+                setNomeUtente(data.nome);
+                setCognomeUtente(data.cognome);
+                
+                history.push({
+                  pathname: `/utente/${data.id}`,
+                  state: [{
+                    userId: data.id,
+                    nomeUtente: data.nome,
+                    cognomeUtente: data.cognome
+                  }]
+                });
+                
            
            });
         } else {
-          console.log("######  KO CREAZIONE ##########");
-         // console.log('KO', result);
-        /*  result.json().then(data => {
-            console.log(data)
-          });
-          */
+          
           setErrorMessage("ERRORE REGISTRAZIONE NUOVO UTENTE");
           setShowError(true);
         }
@@ -136,9 +128,7 @@ export default function Signup() {
             onChange={(e) => setPassword(e.target.value)}
           />
         <Form.Group controlId="confirmPassword" size="lg">
-          <Form.Label>Conferma Password</Form.Label>
-          <Form.Label>Conferma Password</Form.Label>
-          
+          <Form.Label>Conferma Password</Form.Label> 
           <Form.Control
             type="password"
             onChange={(e) => setConfirmPassword(e.target.value)}

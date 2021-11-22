@@ -18,7 +18,7 @@ export default function NuovoCliente() {
   const [isLoading, setIsLoading] = useState(false);
 
   function validateForm() {
-    return ragioneSociale.length > 0 && partitaIva.length > 0;
+    return ragioneSociale.length > 0 && partitaIva.length > 0 && nazione.length > 0;
   }
 
   async function handleSubmit(event) {
@@ -90,10 +90,11 @@ export default function NuovoCliente() {
         <Form.Group size="lg" controlId="nazione">
           <Form.Label>Nazione</Form.Label>
           <Form.Control as="select" value={nazione} onChange={(e) => {
-                console.log("e.target.value", e.target.value);
                 setNazione(e.target.value);
+              
             }
             }>
+            <option value=""></option>
             <option value="Italia">Italia</option>
             <option value="Francia">Francia</option>
             <option value="Germania">Germania</option>

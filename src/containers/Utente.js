@@ -31,7 +31,7 @@ export default function Utente() {
   const [idUtenteDaAssociare, setIdUtenteDaAssociare] = useState(null);
   const [utenti, setUtenti] = useState([]);
   const [clientiNonAssociati, setClientiNonAssociati] = useState([]);
-    
+
 
   const renderProjectTooltip = props => (
     <Tooltip {...props}>Vai ai progetti del cliente</Tooltip>
@@ -62,7 +62,7 @@ export default function Utente() {
   function editCliente(id, ragioneSociale) {
     setClienteSelezionato(id);
     setRagioneSociale(ragioneSociale);
-   
+
     setShowModificaCliente(true);
   }
 
@@ -77,11 +77,10 @@ export default function Utente() {
     setIdClienteDaAssociare(id);
     setRagioneSociale(ragioneSociale);
     loadUtenti();
-   
+
     setShowAssociaAdAltroUtente(true);
   }
   function associaUtente() {
-
     loadClienti();
     setShowAssociaAdCliente(true);
   }
@@ -109,7 +108,6 @@ export default function Utente() {
             }));
 
             setClientiNonAssociati(options);
-
 
           })
         } else {
@@ -264,9 +262,9 @@ export default function Utente() {
                 "value": d.id,
                 "label": d.nome + " " + d.cognome
               }));
-              
+
               setUtenti(options);
-     
+
             })
           }
         })
@@ -281,7 +279,7 @@ export default function Utente() {
   }
 
   useEffect(() => {
-   // console.log(">>>>> UTENTE con LOCATION "+ location.pathname);
+    // console.log(">>>>> UTENTE con LOCATION "+ location.pathname);
     async function onLoad() {
       /*
       if (!isAuthenticated) {
@@ -299,11 +297,9 @@ export default function Utente() {
         };
 
         fetch("http://localhost:8080/customers/" + userId, requestOptions)
-          //.then(response =>  response.text())
           .then(response => {
             if (response.status === 200) {
               response.json().then(data => {
-                // console.log(data);
                 setCustomers(data);
 
               })
@@ -321,7 +317,7 @@ export default function Utente() {
     setIsLoading(false);
     onLoad();
   }, [isAuthenticated, userId, setCustomerId]);
-//}, []);
+  //}, []);
 
   function handleSelectChange(e) {
 
@@ -330,12 +326,12 @@ export default function Utente() {
 
   function handleUtentiSelectChange(e) {
 
-    if (e.value != null){
+    if (e.value != null) {
       setShowAssociaConfirmaButton(true);
       setIdUtenteDaAssociare(e.value);
-   
+
     }
-   
+
   }
 
   function creaCliente() {
@@ -358,12 +354,12 @@ export default function Utente() {
   function renderCustomersList(Customers) {
     return (
       <>
-       
+
         <h2 className="pb-3 mt-4 mb-3 border-bottom">
-        <Button variant="outline-success" style={{ marginRight: "10px" }} onClick={loadCustomers}>
-          <AiOutlineReload />
-        </Button>
-        Clienti di {nomeUtente} {cognomeUtente}
+          <Button variant="outline-success" style={{ marginRight: "10px" }} onClick={loadCustomers}>
+            <AiOutlineReload />
+          </Button>
+          Clienti di <b>{nomeUtente} {cognomeUtente}</b>
         </h2>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="sticky table" className="-striped -highlight">
@@ -386,86 +382,21 @@ export default function Utente() {
                     <TableCell align="center">{cliente.nazione}</TableCell>
                     <TableCell align="center">{cliente.descrizione}</TableCell>
 
-                    <TableCell align="left">
+                    <TableCell align="right">
 
-                      <OverlayTrigger placement="top" overlay={renderEditTooltip}>
-                        <Button style={{ marginRight: "5px" }}>  <AiOutlineEdit onClick={(e) => editCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
-                      </OverlayTrigger>
+                    
                       <OverlayTrigger placement="top" overlay={renderProjectTooltip}>
                         <Button style={{ marginRight: "5px" }}>  <GoProject onClick={(e) => aggiornaCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
                       </OverlayTrigger>
                       <OverlayTrigger placement="top" overlay={renderAssociaTooltip}>
                         <Button style={{ marginRight: "5px" }}>  <AiOutlineLink onClick={(e) => associaCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
                       </OverlayTrigger>
+                      <OverlayTrigger placement="top" overlay={renderEditTooltip}>
+                        <Button style={{ marginRight: "5px" }}>  <AiOutlineEdit onClick={(e) => editCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
+                      </OverlayTrigger>
                       <OverlayTrigger placement="top" overlay={renderEliminaTooltip}>
                         <Button> <RiDeleteBin6Line onClick={(e) => eliminaCliente(cliente.id, cliente.ragioneSociale)} /> </Button>
                       </OverlayTrigger>
-                      <Modal show={showDelete} onHide={() => setShowDelete(false)} animation={false}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>Cancellare il CLIENTE {ragioneSocialeClienteSelezionato}?</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>L'operazione non è reversibile</Modal.Body>
-                        <Modal.Footer>
-                          <Button variant="secondary" onClick={() => setShowDelete(false)}>
-                            Annulla
-                          </Button>
-                          <Button variant="primary" onClick={(e) => confermaEliminazione()} >
-                            Conferma
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-                      <Modal show={showAssociaAdAltroUtente} onHide={() => setShowAssociaAdAltroUtente(false)} animation={false}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>Associare il cliente {ragioneSocialeClienteSelezionato} ad un altro utente</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body >
-                        <Select options={utenti} onChange={handleUtentiSelectChange} />
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button variant="secondary" onClick={() => setShowAssociaAdAltroUtente(false)}>
-                            Annulla
-                          </Button>
-                          <Button variant="primary" onClick={(e) => confermaAssociazione()} disabled={!showAssociaConfirmaButton}>
-                            Conferma
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-                    
-                      <Modal show={showModificaCliente} onHide={() => setShowModificaCliente(false)} animation={false}>
-                        <Modal.Header closeButton>
-                          <Modal.Title> Modifica cliente {ragioneSocialeClienteSelezionato}</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body >
-                          <div align="center">
-                            <RiTodoFill size={"150px"} />
-                            <br /> <br />TODO
-                          </div>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button variant="secondary" onClick={() => setShowModificaCliente(false)}>
-                            Annulla
-                          </Button>
-                          <Button variant="primary" onClick={(e) => confermaModificaCliente()} disabled="true">
-                            Conferma
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
-                      <Modal show={showAssociaAdAltroCliente} onHide={() => setShowAssociaAdCliente(false)} animation={false} componentDidMount={loadClienti}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>Associare l'utente a Cliente già esistente</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>Associare l'utente ad uno dei seguenti clienti
-                          <Select options={clientiNonAssociati} onChange={handleSelectChange} />
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button variant="secondary" onClick={() => setShowAssociaAdCliente(false)}>
-                            Annulla
-                          </Button>
-                          <Button variant="primary" onClick={confermaAssociazioneAltroCliente} disabled={checkAltriClienti()}>
-                            Conferma
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
 
                     </TableCell>
                   </TableRow>
@@ -475,16 +406,73 @@ export default function Utente() {
 
           </Table>
         </TableContainer>
-      </>
-    );
-  }
+        <Modal show={showDelete} onHide={() => setShowDelete(false)} animation={false}>
+          <Modal.Header closeButton>
+            <Modal.Title>Cancellare il cliente <b>{ragioneSocialeClienteSelezionato}</b> ?</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>L'operazione non è reversibile</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowDelete(false)}>
+              Annulla
+            </Button>
+            <Button variant="primary" onClick={(e) => confermaEliminazione()} >
+              Conferma
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={showAssociaAdAltroUtente} onHide={() => setShowAssociaAdAltroUtente(false)} animation={false}>
+          <Modal.Header closeButton>
+            <Modal.Title>Associare il cliente <b>{ragioneSocialeClienteSelezionato}</b> ad un altro utente</Modal.Title>
+          </Modal.Header>
+          <Modal.Body >
+            <Select options={utenti} onChange={handleUtentiSelectChange} />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowAssociaAdAltroUtente(false)}>
+              Annulla
+            </Button>
+            <Button variant="primary" onClick={(e) => confermaAssociazione()} disabled={!showAssociaConfirmaButton}>
+              Conferma
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-  function renderLander() {
-    return (
-      <div className="lander">
-        <h1>iDocs</h1>
-        <p className="text-muted">Gestione Documentale</p>
-      </div>
+        <Modal show={showModificaCliente} onHide={() => setShowModificaCliente(false)} animation={false}>
+          <Modal.Header closeButton>
+            <Modal.Title> Modifica cliente <b>{ragioneSocialeClienteSelezionato}</b></Modal.Title>
+          </Modal.Header>
+          <Modal.Body >
+            <div align="center">
+              <RiTodoFill size={"150px"} />
+              <br /> <br />TODO
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModificaCliente(false)}>
+              Annulla
+            </Button>
+            <Button variant="primary" onClick={(e) => confermaModificaCliente()} disabled="true">
+              Conferma
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={showAssociaAdAltroCliente} onHide={() => setShowAssociaAdCliente(false)} animation={false} >
+          <Modal.Header closeButton>
+            <Modal.Title>Associa a cliente già esistente</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Clienti non ancora associati
+            <Select options={clientiNonAssociati} onChange={handleSelectChange} />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowAssociaAdCliente(false)}>
+              Annulla
+            </Button>
+            <Button variant="primary" onClick={confermaAssociazioneAltroCliente} disabled={checkAltriClienti()}>
+              Conferma
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     );
   }
 
@@ -502,8 +490,7 @@ export default function Utente() {
 
   return (
     <div>
-      { renderCustomers() }
-     {/**  {isAuthenticated ? renderCustomers() : renderLander()}*/}
+      {renderCustomers()}
     </div>
   );
 }

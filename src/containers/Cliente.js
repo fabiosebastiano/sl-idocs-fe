@@ -25,7 +25,7 @@ export default function ClienteNew() {
   const [nomeProgettoSelezionato, setNomeProgetto] = useState("");
   const [progettoSelezionato, setProgettoSelezionato] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
-  const { isAuthenticated, userHasAuthenticated,  userId, userGetLoggedIn} = useAppContext();
+  const { userHasAuthenticated,  userId, userGetLoggedIn} = useAppContext();
   const [showModificaProgetto, setShowModificaProgetto] = useState(false);
 
   const renderDocsTooltip = props => (
@@ -51,6 +51,7 @@ export default function ClienteNew() {
   ];
 
   function editProgetto(id, nome){
+    setNomeProgetto(nome);
     setShowModificaProgetto(true);
   };
 
@@ -85,9 +86,6 @@ export default function ClienteNew() {
 
   useEffect(() => {
     userHasAuthenticated(true);
-
-//    console.log(">>>>> CARICAMENTO CLIENTE con userAutenticated "+ isAuthenticated);
-   
     async function onLoad() {
       try {
         loadCliente();
@@ -235,7 +233,7 @@ export default function ClienteNew() {
                     <TableCell component="th" scope="row" className="font-weight-bold"> {progetto.nome}</TableCell>
                     <TableCell align="center">{progetto.descrizione}</TableCell>
 
-                    <TableCell align="left">
+                    <TableCell align="right">
                       
                       <OverlayTrigger placement="top" overlay={renderDocsTooltip}>
                         <Button style={{ marginRight: "5px" }}>  <HiOutlineDocumentDuplicate onClick={(e) => aggiornaProgetto(progetto.id)} /> </Button>
@@ -251,9 +249,18 @@ export default function ClienteNew() {
                         </Button>
                       </OverlayTrigger>
 
-                      <Modal show={showDelete} onHide={() => setShowDelete(false)} animation={false}>
+                    
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+            </TableBody>
+
+          </Table>
+        </TableContainer>
+        <Modal show={showDelete} onHide={() => setShowDelete(false)} animation={false}>
                         <Modal.Header closeButton>
-                          <Modal.Title>Cancellare il progetto {nomeProgettoSelezionato}?</Modal.Title>
+                          <Modal.Title>Cancellare il progetto <b>{nomeProgettoSelezionato}</b> ?</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>L'operazione non è reversibile</Modal.Body>
                         <Modal.Footer>
@@ -267,7 +274,7 @@ export default function ClienteNew() {
                       </Modal>
                       <Modal show={showModificaProgetto} onHide={() => setShowModificaProgetto(false)} animation={false}>
                         <Modal.Header closeButton>
-                          <Modal.Title> Modifica progetto {nomeProgettoSelezionato}</Modal.Title>
+                          <Modal.Title> Modifica progetto <b>{nomeProgettoSelezionato}</b></Modal.Title>
                         </Modal.Header>
                         <Modal.Body >
                           <div align="center">
@@ -284,15 +291,6 @@ export default function ClienteNew() {
                           </Button>
                         </Modal.Footer>
                       </Modal>
-                    </TableCell>
-                  </TableRow>
-                ))}
-
-            </TableBody>
-
-          </Table>
-        </TableContainer>
-
       </>
     );
   }
@@ -304,7 +302,7 @@ export default function ClienteNew() {
         <Button variant="outline-success" style={{ marginRight: "10px" }} onClick={loadProgetti}>
           <AiOutlineReload />
         </Button>
-          Progetti del cliente {ragioneSociale}</h2>
+          Progetti del cliente <b>{ragioneSociale}</b></h2>
         <ListGroup>{renderProjectsList(listaProgetti)}</ListGroup>
         <br />
         <Button variant="outline-primary" onClick={creaProgetto}>+ Crea nuovo progetto</Button>{'    '}
@@ -317,13 +315,11 @@ export default function ClienteNew() {
     <>
       <Breadcrumbs aria-label="breadcrumb">
         <Link underline="hover" color="inherit" 
-       // href={"/utente/" + userId}
-        //href={""}
         
         onClick={() => {
           userGetLoggedIn(userId);
           userHasAuthenticated(true);
-          
+
           history.push({
             pathname: `/utente/`+userId,
             state: [{

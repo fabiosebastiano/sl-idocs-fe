@@ -19,8 +19,6 @@ export default function NuovoCliente() {
     return nome.length > 0;
   }
 
-
-
   async function handleSubmit(event) {
     event.preventDefault();
 
