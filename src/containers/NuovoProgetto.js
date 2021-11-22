@@ -37,7 +37,6 @@ export default function NuovoCliente() {
         "descrizione": descrizione
       });
 
-
       var requestOptions = {
         method: 'POST',
         headers: myHeaders,

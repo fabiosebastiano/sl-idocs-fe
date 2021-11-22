@@ -362,13 +362,14 @@ export default function ClienteNew() {
            }
           }
           onClick={() => {
-          userGetLoggedIn(userId);
-          userHasAuthenticated(true);
-          history.push({
-            pathname: `/utente/`+userId,
-            state: [{
-              clientId: id
-            }]
+            userGetLoggedIn(userId);
+            userHasAuthenticated(true);
+            history.push({
+              pathname: `/utente/`+userId,
+              state: [{
+                clientId: id,
+                userId: userId
+              }]
           });
         }
         }>
@@ -377,10 +378,24 @@ export default function ClienteNew() {
         <Link
           underline="hover"
           color="inherit"
-          href={"/customers/"+state[0].clientId}
+        //  href={"/customers/"+state[0].clientId}
+          state={
+            { 
+               userHasAuthenticated: true, 
+               userId: userId,
+               clientId: state[0].clientId
+            }
+           }
           onClick={() => {
             userGetLoggedIn(userId);
             userHasAuthenticated(true);
+            history.push({
+              pathname: `/customers/`+state[0].clientId,
+              state: [{
+                clientId: state[0].clientId,
+                userId: userId
+              }]
+          });
           }
           }
         >

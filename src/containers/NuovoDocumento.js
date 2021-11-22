@@ -58,7 +58,7 @@ export default function NewNote() {
       fetch("http://localhost:8080/docs", requestOptions)
         .then(result => {
           if (result.status === 200) {
-           
+           console.log("--- OK CREAZIONE DOCUMENTO su cliente "+ state[0].clientId + " e user "+ state[0].useriD);
              history.push({
             pathname: `/projects/${idProgetto}`,
               state: [{

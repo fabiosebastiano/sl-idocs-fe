@@ -71,7 +71,7 @@ export default function ClienteNew() {
         if (response.status === 200) {
 
           response.json().then(data => {
-
+            
             setRagioneSociale(data.ragioneSociale);
 
           })
@@ -90,7 +90,7 @@ export default function ClienteNew() {
       try {
         loadCliente();
         loadProgetti();
-
+        console.log("----FINE USE EFFECT che utente >>> "+ userId);
       } catch (e) {
         onError(e);
       }
@@ -110,7 +110,7 @@ export default function ClienteNew() {
       headers: myHeaders,
       redirect: 'follow'
     };
-
+    console.log("CARICO PROGETTI PER CLIENTE " + idCliente + " OPPURE "+ id);
     fetch("http://localhost:8080/projects/" + id, requestOptions)
       //.then(response =>  response.text())
       .then(response => {
@@ -315,15 +315,24 @@ export default function ClienteNew() {
     <>
       <Breadcrumbs aria-label="breadcrumb">
         <Link underline="hover" color="inherit" 
-        
+         state={
+          { 
+             userHasAuthenticated: true, 
+             userId: userId,
+             clientId: id
+          }
+         }
         onClick={() => {
+          console.log("DA CLIENTE TORNO ALLA HOME con userId "+ userId);
           userGetLoggedIn(userId);
           userHasAuthenticated(true);
 
           history.push({
             pathname: `/utente/`+userId,
             state: [{
-              clientId: id
+              clientId: id,
+              userId: userId,
+              userHasAuthenticated: true
             }]
           });
         }}
